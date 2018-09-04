@@ -18,6 +18,10 @@ variable "keys" {
     #type = "list"
 }
 
-variable "allow_destroy" {  
+variable "floatip" {  
     default = false
+}
+
+variable "floatip_pool" {
+    default = "external-network"
 }

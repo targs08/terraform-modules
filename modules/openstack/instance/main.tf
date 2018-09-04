@@ -8,12 +8,6 @@ data "openstack_images_image_v2" "image" {
   }
 }
 
-# data "openstack_compute_flavor_v2" "flavor" {
-#   vcpus = "${var.flavor_vcpus}"
-#   ram   = "${var.flavor_ram}"
-#   disk  = "${var.flavor_disk}"
-# }
-
 resource "openstack_blockstorage_volume_v2" "disk_root" {
     count = "${var.count}"
     name        = "disk_${var.name}${count.index}_root"
@@ -22,7 +16,7 @@ resource "openstack_blockstorage_volume_v2" "disk_root" {
     size        = "${var.storage_size}"
     volume_type = "${var.storage_type}"
     lifecycle {
-        prevent_destroy = false
+        prevent_destroy = true
     }
 }
 
@@ -35,8 +29,6 @@ resource "openstack_compute_instance_v2" "server" {
 
     network {
         uuid        = "${var.network_id}"
-    #    fixed_ip_v4 = "${var.server_ip}"
-    #  floating_ip = "${var.server_floating_ip}"
     }
 
 
@@ -51,4 +43,15 @@ resource "openstack_compute_instance_v2" "server" {
         boot_index       = 0
         destination_type = "volume"
     }
+}
+
+resource "openstack_networking_floatingip_v2" "floatip" {
+    count = "${var.floatip ? var.count : 0}"
+    pool = "${var.floatip_pool}"
+}
+
+resource "openstack_compute_floatingip_associate_v2" "floatip_associate" {
+    count = "${var.floatip ? var.count : 0}"
+    floating_ip = "${element(openstack_networking_floatingip_v2.floatip.*.address, count.index)}"
+    instance_id = "${element(openstack_compute_instance_v2.server.*.id, count.index)}"
 }
