@@ -7,8 +7,6 @@ variable "HCLOUD_AVAILABLE_DC" {
 
 variable "HCLOUD_INSTANCE_TYPE" { }
 
-variable "HCLOUD_KEYPAIR" { }
-
 variable "count" { }
 
 variable "name_prefix" { }
