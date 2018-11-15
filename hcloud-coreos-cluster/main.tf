@@ -5,7 +5,7 @@ provider "hcloud" {
 
 resource "hcloud_keypair" "keypair" {
   name = "${var.name_prefix}.init"
-  public_key = "${var.ssh_public_key}"
+  public_key = "${var.ssh_key_public}"
 
   lifecycle {
       create_before_destroy = true
@@ -14,7 +14,7 @@ resource "hcloud_keypair" "keypair" {
 
 resource "random_shuffle" "server_region" {
   input = "${var.HCLOUD_AVAILABLE_DC}"
-  result_count = "${var.servers_count}"
+  result_count = "${var.count}"
 }
 
 locals {
@@ -26,7 +26,7 @@ data "template_file" "cloud-config" {
   template = "${file("${path.module}/templates/cloud-config.yml.tpl")}"
 
   vars {
-    hostname = "${var.servers_name_prefix}${count.index}"
+    hostname = "${var.name_prefix}${count.index}"
     region = "${local.region[count.index]}"
     ssh_key_public = "${var.ssh_key_public}"
   }
@@ -34,7 +34,7 @@ data "template_file" "cloud-config" {
 
 resource "hcloud_server" "servers" {
   count = "${var.count}"
-  name = "${var.servers_name_prefix}${count.index}"
+  name = "${var.name_prefix}${count.index}"
   image = "debian-9"
   server_type = "${var.HCLOUD_INSTANCE_TYPE}"
   ssh_keys = [ "${hcloud_keypair.keypair.id}" ]
