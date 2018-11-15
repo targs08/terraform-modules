@@ -11,12 +11,8 @@ variable "count" { }
 
 variable "name_prefix" { }
 
-variable "ssh_key_private" {
-    default = "${file("~/.ssh/id_rsa")}"
-}
+variable "ssh_key_private" { }
 
-variable "ssh_key_public" { 
-    default = "${file("~/.ssh/id_rsa.pub")}"
-}
+variable "ssh_key_public" { }
 
 
