@@ -3,7 +3,7 @@ provider "hcloud" {
   token = "${var.HCLOUD_TOKEN}"
 }
 
-resource "hcloud_keypair" "keypair" {
+resource "hcloud_ssh_key" "ssh_key" {
   name = "${var.name_prefix}.init"
   public_key = "${var.ssh_key_public}"
 
@@ -37,7 +37,7 @@ resource "hcloud_server" "servers" {
   name = "${var.name_prefix}${count.index}"
   image = "debian-9"
   server_type = "${var.HCLOUD_INSTANCE_TYPE}"
-  ssh_keys = [ "${hcloud_keypair.keypair.id}" ]
+  ssh_keys = [ "${hcloud_ssh_key.ssh_key.id}" ]
   datacenter = "${local.region[count.index]}"
   rescue = "linux64"
 
